@@ -28,3 +28,9 @@ class Teacher(models.Model):
     
     def get_teacher_mobile(self):
         return self.user_id.mobile
+
+
+
+class testhello(models.Model):
+    user_id = models.ForeignKey(Account, on_delete=models.CASCADE)
+    title = models.CharField(max_length=63)

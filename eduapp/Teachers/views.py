@@ -2,11 +2,15 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.generics import CreateAPIView,ListAPIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated,IsAdminUser
 
 from .serializers import TeacherSerializer,GetTeacherSerializer
 from .models import Teacher
 from Authentications.models import Account
+
+from courseformat.models import Subjects
+from courseformat.serializers import SubjectSerializer
+
 
 
 @api_view(['GET'])
@@ -101,7 +105,12 @@ class GetTeacherview(ListAPIView):
     # serializer_class = GetTeacherSerializer
     # queryset = Teacher.objects.get()
     def get(self, request):
+        print(dir(request))
         user = request.user
+        print(user)
         teacher = Teacher.objects.get(user_id = user)
+        # print(teacher.query)
         serializer = GetTeacherSerializer(teacher)
         return Response(serializer.data)
+
+

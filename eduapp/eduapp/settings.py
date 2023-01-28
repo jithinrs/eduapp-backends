@@ -33,6 +33,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -44,6 +46,7 @@ INSTALLED_APPS = [
     'Teachers',
     'adminpanel',
     'courseformat',
+    'chats',
 
     'rest_framework',
     'corsheaders',
@@ -60,7 +63,7 @@ REST_FRAMEWORK = {
 "test"
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=600),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=90),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
@@ -120,6 +123,17 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'eduapp.wsgi.application'
+
+ASGI_APPLICATION = "eduapp.asgi.application"
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
+
 AUTH_USER_MODEL='Authentications.Account'
 
 

@@ -31,3 +31,15 @@ class ChapterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Chapters
         fields = '__all__'
+
+class StudentChapterSerialzer(serializers.ModelSerializer):
+    chapter_materials = ChapterMaterialSerializer(many = True)
+    class Meta:
+        model = Chapters
+        fields = ['id', 'course_id', 'slug', 'chapter_name', 'chapter_description', 'chapter_materials', 'course_joined']
+
+
+class chapterNotificationserializer(serializers.ModelSerializer):
+    class Meta:
+        model = Chapters
+        fields = ['chapter_name', 'teacher_name', 'course_name','course_slug', 'slug']

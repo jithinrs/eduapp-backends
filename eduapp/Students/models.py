@@ -6,7 +6,7 @@ from courseformat.models import Course
 class Student(models.Model):
     user_id = models.ForeignKey(Account, on_delete=models.CASCADE)
     profile_image = models.ImageField()
-    
+    sstudentuniqueid = models.CharField(max_length=31,null=True, blank=True)
     grade_choice = [
         ('8th grade','8th grade'),
         ('9th grade','9th grade'),
@@ -29,11 +29,20 @@ class Student(models.Model):
     def __str__(self):
         return self.user_id.first_name + " " + self.user_id.last_name
     
+    def fullname(self):
+        return self.user_id.first_name + " " + self.user_id.last_name
+    
+    def get_email(self):
+        return self.user_id.email
+        
+    def get_mobile(self):
+        return self.user_id.mobile
+    
     
 
     
 
 
-# class CourseJoined(models.Model):
-#     user_id = models.ForeignKey(Account,on_delete=models.CASCADE)
-#     course_id = models.ForeignKey(Course, on_delete=models.CASCADE)
+class CourseJoined(models.Model):
+    student_id = models.ForeignKey(Student,on_delete=models.CASCADE, related_name="joined_student_course")
+    course_id = models.ForeignKey(Course, on_delete=models.CASCADE)

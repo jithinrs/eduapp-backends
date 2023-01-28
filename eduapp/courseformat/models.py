@@ -2,6 +2,7 @@
 from django.db import models
 from Authentications.models import Account
 import uuid
+from django.utils.timezone import now
 
 class Subjects(models.Model):
     title = models.CharField(max_length=255, primary_key=True)
@@ -27,6 +28,7 @@ class Course(models.Model):
     ]
     grade = models.CharField(max_length=15, choices=grade_choice)
     image = models.ImageField()
+    price = models.IntegerField()
     course_description = models.TextField()
 
     class Meta():
@@ -40,12 +42,22 @@ class Chapters(models.Model):
     slug = models.CharField(max_length=255,null=True, blank=True)
     chapter_name = models.CharField(max_length=255)
     chapter_description = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta():
         verbose_name_plural = "Chapters"
 
     def __str__(self):
         return self.chapter_name
+    
+    def course_joined(self):
+        return "joined"
+    def teacher_name(self):
+        return self.course_id.user_id.first_name
+    def course_name(self):
+        return self.course_id.subject_id.title
+    def course_slug(self):
+        return self.course_id.slug
 
 class ChapterMaterials(models.Model):
     chapter_id = models.ForeignKey(Chapters, related_name='chapter_materials', on_delete=models.CASCADE)
@@ -53,9 +65,12 @@ class ChapterMaterials(models.Model):
     file_description = models.TextField(null=True)
     files =  models.FileField()
     file_type = models.CharField(max_length=7, null=True)
+    user_id = models.ManyToManyField(Account, null=True, blank=True)
 
     class Meta():
         verbose_name_plural = "Chapter material"
 
     def __str__(self):
         return self.chapter_id.chapter_name + "'s files"
+    def course_joined(self):
+        return "joined"

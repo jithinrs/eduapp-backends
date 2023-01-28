@@ -148,3 +148,15 @@ class Otpverification(APIView):
             return Response(data=response, status=status.HTTP_200_OK)
         else:
             return Response(data={"message": "invalid otp"})
+@api_view(['POST'])
+def BlockUser(request):
+    if request.method == 'POST':
+
+
+
+        response = {
+                "message": "success"
+            }
+
+            
+        return Response(data=response)

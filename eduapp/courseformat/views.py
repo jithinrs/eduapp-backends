@@ -1,13 +1,14 @@
 from rest_framework import generics
-from .serializers import SubjectSerializer,CourseSerializer,AllcourseSerializer,ChapterSerializer,ChapterMaterialSerializer
+from .serializers import SubjectSerializer,CourseSerializer,AllcourseSerializer,ChapterSerializer,ChapterMaterialSerializer,StudentChapterSerialzer,chapterNotificationserializer
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view,permission_classes
 from django.db.models import Case, When, Value
+from rest_framework.permissions import IsAuthenticated
 
 from .models import Subjects,Chapters,ChapterMaterials
 from .models import Course
 from Authentications.models import Account
-from Students.models import Student
+from Students.models import Student,CourseJoined
 
 
 class AllSubjectview(generics.ListAPIView):
@@ -33,7 +34,7 @@ def CreateCourseview(request):
         user_id = request.data['user_id']
         subject_id = request.data['subject_id']
         grade = request.data['grade']
-        # title = request.data['title']
+        price = request.data['price']
         image = request.data['image']
         course_description = request.data['course_description']
         subject = Subjects.objects.get(title = subject_id)
@@ -42,7 +43,7 @@ def CreateCourseview(request):
             user_id = user,
             subject_id = subject,
             grade = grade,
-            # title = title,
+            price = price,
             image = image,
             course_description = course_description
         )
@@ -175,3 +176,56 @@ def AddChapterMaterial(request):
 
             
         return Response(data=response)
+
+
+class MainEachcourse(generics.ListAPIView):
+    # permission_classes = [IsAuthenticated]
+    queryset = Chapters.objects.all
+    def get(self,request,id):
+        print(request.user)
+        user = request.user
+        course = Course.objects.get(slug = id)
+        try:
+            test = CourseJoined.objects.get(student_id__user_id = user, course_id = course)
+            chapters = Chapters.objects.filter(course_id = course)
+            serializer = StudentChapterSerialzer(chapters, many = True)
+            print("hi")
+            return Response(serializer.data)
+
+        except Exception as e:
+            print(e)
+        chapters = Chapters.objects.filter(course_id = course)
+        serializer = ChapterSerializer(chapters, many = True)
+        return Response(serializer.data)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def CompleteChapter(request):
+    if request.method == 'POST':
+        chapter_id = request.data['chapter']
+        material_id = request.data['material_id']
+        user = request.user
+        chapter = Chapters.objects.get(slug = chapter_id)
+        material = ChapterMaterials.objects.get(chapter_id = chapter, id = material_id)
+        material.user_id.add(user)
+        print(material)
+        response = {
+                "message": "success"
+            }
+        return Response(data = response)
+
+
+        
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def courseMaterialNotification(request):
+    if request.method == "GET":
+        user = request.user
+        coursejoined = CourseJoined.objects.filter(student_id__user_id = user).values('course_id')
+        chapters = Chapters.objects.filter(course_id__in = coursejoined).order_by('-created_at')[0:4]
+        print(chapters)
+        serializer = chapterNotificationserializer(chapters, many = True)
+
+        return Response(data = serializer.data)
+
