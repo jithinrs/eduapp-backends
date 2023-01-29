@@ -19,11 +19,6 @@ def teacher_list_view(request):
     serializer = TeacherSerializer(teacher, many = True)
     return Response(serializer.data)
 
-# @api_view(['GET'])
-# def teacher_credentials(request, id):
-#     teacher = TeacherCredentials.objects.get(teacher_id = id)
-#     serializer = TeacherCredentialsSerializer(teacher)
-#     return Response(serializer.data)
 
 
 class teacherapply(CreateAPIView):
@@ -48,7 +43,6 @@ class teacherapply(CreateAPIView):
 class CreateTeacherView(CreateAPIView):
     serializer_class = TeacherSerializer
     def post(self, request):
-
         user_id = request.data['user_id']
         profile_image = request.data['profile_image']
         certificate = request.data['certificate']
@@ -62,7 +56,6 @@ class CreateTeacherView(CreateAPIView):
             profile_image = profile_image,
             certificate = certificate,
             home_address = home_address
-
         )
         x = subject.split(',')
         for i in x:
@@ -73,43 +66,16 @@ class CreateTeacherView(CreateAPIView):
         response = {
                 "message": "success"
             }
-
-            
         return Response(data=response)
 
 
-# class teachercredentials(CreateAPIView):
-#     serializer_class = TeacherCredentialsSerializer
-#     def post(self, request):
-#         serializer = TeacherCredentialsSerializer(data = request.data)
-    
-#         if serializer.is_valid():
-#             # user_id = request.data.get('user_id')
-#             # user = Account.objects.get(id = user_id)
-#             # user.is_teacher = True
-#             # user.save()
-#             response = {
-#                 # "user_role": user.is_teacher,
-#                 "message": "success"
-#             }
-
-#             serializer.save()
-#             return Response(data=response)
-#             # return Response(serializer.data, status = status.HTTP_201_CREATED )
-#         return Response(serializer.errors)
-#         # return Response(data={"message": "Something went wrong!"})
 
 
 class GetTeacherview(ListAPIView):
     permission_classes = [IsAuthenticated]
-    # serializer_class = GetTeacherSerializer
-    # queryset = Teacher.objects.get()
     def get(self, request):
-        print(dir(request))
         user = request.user
-        print(user)
         teacher = Teacher.objects.get(user_id = user)
-        # print(teacher.query)
         serializer = GetTeacherSerializer(teacher)
         return Response(serializer.data)
 

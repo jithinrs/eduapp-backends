@@ -52,7 +52,6 @@ def individual_teacher(request,id):
 @api_view(['GET','POST'])
 def student_list_view(request):
     if request.method == 'GET':
-        # print(dir(request))
         student = Student.objects.all()
         serializer = StudentSerializer(student, many = True)
         return Response(serializer.data)
@@ -63,6 +62,7 @@ def TeacherValidation(request):
     if request.method == 'POST':
         data = request.data['verify']
         user_id = request.data['user_id']
+
         if data == "accept":
             user = Account.objects.get(id = user_id)
             email = user.email
@@ -87,11 +87,24 @@ def TeacherValidation(request):
         return Response(data=response)
     
 
-
 class ListSubjects(ListAPIView):
     queryset = Subjects.objects.all()
     serializer_class = SubjectSerializer
     permission_classes = [IsAdminUser]
+
+@api_view(['POST'])
+def blockunblockuser(request, id):
+    account = Account.objects.get(id = id)
+    validity = account.is_verified
+    account.is_verified = not validity
+    print("hello")
+    account.save()
+
+    response = {
+                "message": "success"
+            }
+    return Response(data = response)
+
 
 
 def tryemail(request):
@@ -100,4 +113,4 @@ def tryemail(request):
     email_from = settings.EMAIL_HOST_USER
     recipent = ['jithinrs2.0@gmail.com',]
     send_mail(subject, message, email_from, recipent)
-    return HttpResponse('<h1> poda </h1>')
+    return HttpResponse('<h1> Testing </h1>')

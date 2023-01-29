@@ -28,6 +28,9 @@ class Teacher(models.Model):
     
     def get_teacher_mobile(self):
         return self.user_id.mobile
+        
+    def verified_or_not(self):
+        return self.user_id.is_verified
 
 
 

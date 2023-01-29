@@ -37,6 +37,9 @@ class Student(models.Model):
         
     def get_mobile(self):
         return self.user_id.mobile
+
+    def verified_or_not(self):
+        return self.user_id.is_verified
     
     
 
